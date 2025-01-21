@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <xacro:include filename="$(find robotrainer3_description)/urdf/common/inertials.xacro"/>
+  <xacro:include filename="$(find robotrainer3_description)/urdf/common/materials.xacro"/>
+
+  <!-- TODO Add when gazebo -->
+  <!--   <xacro:include filename="$(find cob_description)/urdf/cob4_base/base.gazebo.xacro" /> -->
+
+  <!-- drive_wheel module -->
+  <xacro:include filename="$(find robotrainer3_description)/urdf/drive_wheel/drive_wheel.urdf.xacro"/>
+
+  <!-- properties -->
+  <xacro:property name="caster_offset_x" value="0.24844"/>  <!--modify
+  here-->
+  <xacro:property name="caster_offset_y" value="0.21515"/>
+  <xacro:property name="caster_offset_z" value="-0.0782"/>
+
+  <!-- sensors -->
+  <!--   TODO Change this to microScan3 -->
+  <xacro:include filename="$(find robotrainer3_description)/urdf/sick_s300_laser/sick_s300_laser.urdf.xacro"/>
+
+  <!-- properties -->
+  <xacro:property name="laser_left_x" value="${caster_offset_x/4}"/>  <!--modify
+  here-->
+  <xacro:property name="laser_left_y" value="${caster_offset_y/4}"/>
+  <xacro:property name="laser_left_z" value="-0.05"/>
+  <xacro:property name="laser_left_roll" value="0.0"/>
+  <xacro:property name="laser_left_pitch" value="0.0"/>
+  <xacro:property name="laser_left_yaw" value="${pi}"/>
+  <xacro:property name="laser_right_x" value="${caster_offset_x/4}"/>  <!--modify
+  here-->
+  <xacro:property name="laser_right_y" value="${-caster_offset_y/4}"/>
+  <xacro:property name="laser_right_z" value="-0.05"/>
+  <xacro:property name="laser_right_roll" value="0.0"/>
+  <xacro:property name="laser_right_pitch" value="0.0"/>
+  <xacro:property name="laser_right_yaw" value="${-pi}"/>
+
+  <xacro:property name="base_mass" value="100"/>
+
+  <!-- fts -->
+  <!-- <xacro:include filename="$(find ati_force_torque)/description/urdf/macros/mini58.urdf.xacro" /> -->
+
+  <xacro:macro name="robotrainer3" params="prefix parent *origin">
+
+    <xacro:property name="drive_vel" value="19.95"/>
+    <xacro:property name="steer_vel" value="117.81"/>
+
+    <!-- BASE -->
+    <joint name="${prefix}base_joint" type="fixed">
+      <xacro:insert_block name="origin"/>
+      <parent link="${parent}"/>
+      <child link="${prefix}base_link"/>
+    </joint>
+
+    <link name="${prefix}base_link">
+      <xacro:cylinder_inertial radius="0.5" length="1.2" mass="50">
+        <origin xyz="0 0 0.2" rpy="0 0 0"/>
+      </xacro:cylinder_inertial>
+      <visual>
+        <origin xyz="0 0 0.045" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotrainer3_description/meshes/robotrainer3/collision/base.stl"/>
+        </geometry>
+        <material name="grey"/>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0.045" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotrainer3_description/meshes/robotrainer3/collision/base.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="${prefix}footprint"/>
+
+    <joint name="${prefix}base_footprint_joint" type="fixed">
+      <origin xyz="0 0 -0.20" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}footprint"/>
+    </joint>
+
+    <link name="${prefix}handle">
+      <xacro:box_inertial x="0.2" y="1.5" z="0.2" mass="5">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </xacro:box_inertial>
+      <visual>
+        <geometry>
+          <mesh filename="package://robotrainer3_description/meshes/robotrainer3/collision/handle.stl"/>
+        </geometry>
+        <material name="light_grey"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://robotrainer3_description/meshes/robotrainer3/collision/handle.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}base_handle_joint" type="fixed">
+      <origin xyz="-0.18 0 0.65" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}handle"/>
+    </joint>
+
+    <link name="${prefix}leg_right">
+      <xacro:box_inertial x="0.5" y="0.2" z="0.2" mass="5">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </xacro:box_inertial>
+      <visual>
+        <geometry>
+          <mesh filename="package://robotrainer3_description/meshes/robotrainer3/collision/leg_right.stl"/>
+        </geometry>
+        <material name="light_grey"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://robotrainer3_description/meshes/robotrainer3/collision/leg_right.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}base_leg_right_joint" type="fixed">
+      <origin xyz="0 -0.17 0.05" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}leg_right"/>
+    </joint>
+
+    <link name="${prefix}leg_left">
+      <xacro:box_inertial x="0.5" y="0.2" z="0.2" mass="5">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </xacro:box_inertial>
+      <visual>
+        <geometry>
+          <mesh filename="package://robotrainer3_description/meshes/robotrainer3/collision/leg_left.stl"/>
+        </geometry>
+        <material name="light_grey"/>
+      </visual>
+      <collision>
+        <geometry>
+          <mesh filename="package://robotrainer3_description/meshes/robotrainer3/collision/leg_left.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="${prefix}base_leg_left_joint" type="fixed">
+      <origin xyz="0 0.17 0.05" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}leg_left"/>
+    </joint>
+
+
+    <!-- COMPONENTS -->
+
+    <!-- fts -->
+    <!-- <xacro:ati_mini58 name="fts" parent="${prefix}base_link">
+      <origin xyz="-0.348 0  0.96" rpy="0 0 0" />
+    </xacro:ati_mini58> -->
+
+    <!-- led -->
+    <link name="${prefix}led"/>
+    <joint name="${prefix}base_led_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}led"/>
+    </joint>
+
+    <!-- virtual wheels for bicycle steering -->
+    <xacro:property name="wheel_radius" value="0.1"/>
+
+    <link name="${prefix}virtual_rear_wheel">
+      <xacro:cylinder_inertial radius="${wheel_radius}" length="0.05" mass="1">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </xacro:cylinder_inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.01" radius="${wheel_radius}"/>
+        </geometry>
+        <material name="invisible"/>
+      </visual>
+    </link>
+
+    <joint name="${prefix}virtual_rear_wheel_joint" type="continuous">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}virtual_rear_wheel"/>
+      <origin xyz="${-caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
+      <axis xyz="0 1 0"/>
+      <limit effort="100.0" velocity="100.0"/>
+      <dynamics damping="0.2"/>
+    </joint>
+
+    <link name="${prefix}virtual_front_wheel">
+      <xacro:cylinder_inertial radius="${wheel_radius}" length="0.05" mass="1">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+      </xacro:cylinder_inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.01" radius="${wheel_radius}"/>
+        </geometry>
+        <material name="invisible"/>
+      </visual>
+    </link>
+
+    <joint name="${prefix}virtual_front_wheel_joint" type="revolute">
+      <parent link="${prefix}base_link"/>
+      <child link="${prefix}virtual_front_wheel"/>
+      <origin xyz="${caster_offset_x/2} 0.0 ${caster_offset_z}" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit lower="-0.7" upper="0.7" effort="100.0" velocity="100.0"/>
+      <dynamics damping="0.2"/>
+    </joint>
+
+    <!-- drive wheel -->
+    <xacro:drive_wheel parent="base_link" suffix="f">
+      <origin xyz="${caster_offset_x/2} 0.0 ${caster_offset_z}" rpy="0 0 0"/>
+    </xacro:drive_wheel>
+    <xacro:drive_wheel parent="base_link" suffix="bl">
+      <origin xyz="${-caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
+    </xacro:drive_wheel>
+    <xacro:drive_wheel parent="base_link" suffix="br">
+      <origin xyz="${-caster_offset_x} ${-caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
+    </xacro:drive_wheel>
+
+    <!-- base laser front -->
+    <xacro:sick_s300_laser_v0 name="base_laser_left" parent="${prefix}base">
+      <origin xyz="${laser_left_x} ${laser_left_y} ${laser_left_z}" rpy="${laser_left_roll} ${laser_left_pitch} ${laser_left_yaw}"/>
+    </xacro:sick_s300_laser_v0>
+
+    <!-- base laser rear -->
+    <xacro:sick_s300_laser_v0 name="base_laser_right" parent="${prefix}base">
+      <origin xyz="${laser_right_x} ${laser_right_y} ${laser_right_z}" rpy="${laser_right_roll} ${laser_right_pitch} ${laser_right_yaw}"/>
+    </xacro:sick_s300_laser_v0>
+
+  </xacro:macro>
+</robot>
