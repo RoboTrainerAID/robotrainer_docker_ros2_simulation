@@ -105,6 +105,10 @@ RUN git clone -b master https://github.com/StoglRobotics/ros_team_workspace.git
 RUN echo "source /home/$USER/ros2_ws/src/ros_team_workspace/setup.bash" >> /home/$USER/.bashrc
 ENV ROS_WS=/home/$USER/ros2_ws
 
+RUN touch /home/$USER/ros2_ws/src/ros2_control_demos/example_14/COLCON_IGNORE
+RUN touch /home/$USER/ros2_ws/src/ros2_control_demos/example_12/COLCON_IGNORE
+RUN touch /home/$USER/ros2_ws/src/ros2_control_demos/example_7/COLCON_IGNORE
+
 COPY src/robotrainer3_description ./robotrainer3_description
 COPY src/robotrainer3_bringup ./robotrainer3_bringup
 
@@ -115,7 +119,7 @@ USER $USER
 ##############################################################################
 WORKDIR /home/$USER/ros2_ws
 RUN rosdep update --rosdistro $ROS_DISTRO
-RUN rosdep install --from-paths src --ignore-src -y
+RUN rosdep install --from-paths src --ignore-src -y --skip-keys "ros2_control_demo_example_14 ros2_control_demo_example_12 ros2_control_demo_example_7"
 RUN . /opt/ros/$ROS_DISTRO/setup.sh && colcon build --symlink-install \
     --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 RUN echo "source /home/$USER/ros2_ws/install/setup.bash" >> /home/$USER/.bashrc
